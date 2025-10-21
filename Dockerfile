@@ -39,4 +39,7 @@ RUN touch database/database.sqlite
 # Generate application key and run migrations
 RUN php artisan key:generate && php artisan migrate --force
 
+# Install PCOV for code coverage (lightweight and fast)
+RUN pecl install pcov && docker-php-ext-enable pcov
+
 EXPOSE 8000
