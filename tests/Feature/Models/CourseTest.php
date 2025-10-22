@@ -4,12 +4,10 @@ namespace Tests\Feature\Models;
 use App\Models\Course;
 use App\Models\Video;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\get;
 
 // uses(DatabaseMigrations::class);
-uses(RefreshDatabase::class);
 
 it('shows courses overview', function () {
     // Arrange
@@ -76,3 +74,5 @@ it('has videos relation', function () {
         ->toHaveCount(3)
         ->each->toBeInstanceOf(Video::class);
 });
+
+

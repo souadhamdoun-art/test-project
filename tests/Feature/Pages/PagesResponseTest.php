@@ -2,15 +2,14 @@
 namespace Tests\Feature\Pages;
 
 use App\Models\Course;
+use App\Models\Video;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\get;
 
 /**
  * A basic test example.
  */
-uses(RefreshDatabase::class);
 
 it('give welcome page', function () {
     get(route('pages.home'))->assertOk();
@@ -25,10 +24,24 @@ it('give back successful response for course details page', function () {
 
 
 it('give back successful response for dashboard page', function () {
-    //arrange
-    $user = User::factory()->create();
-
-    //act & assert
-    $this->actingAs($user);
-    get(route('dashboard'))->assertOk();
+    loginAsUser();
+    get(route('pages.dashboard'))->assertOk();
 });
+
+it('does not find jetStream registration page', function () {
+    get('register')->assertNotFound();
+});
+
+it('gives successful response for videos page', function () {
+    //arrange
+    $course = Course::factory()
+    ->has(Video::factory())
+    ->create();
+    // act & assert
+    loginAsUser();
+    get(route('pages.course-videos', $course))
+    ->assertOk();
+});
+
+
+
