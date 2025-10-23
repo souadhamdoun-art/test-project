@@ -22,7 +22,7 @@ it('list purchased courses', function () {
                     ['title' => 'Course A'],
                     ['title' => 'Course B']
                 )
-        ))
+       ),'purchasedCourses')
         ->create();
     //act & assert
     loginAsUser($user);
@@ -48,8 +48,8 @@ it('shows latest purchased course first', function () {
     $firstPurchasedCourse = Course::factory()->create();
     $lastPurchasedCourse = Course::factory()->create();
 
-    $user->courses()->attach($firstPurchasedCourse,['created_at' =>Carbon::yesterday()]);
-    $user->courses()->attach($lastPurchasedCourse,['created_at' =>Carbon::now()]);
+    $user->purchasedCourses()->attach($firstPurchasedCourse,['created_at' =>Carbon::yesterday()]);
+    $user->purchasedCourses()->attach($lastPurchasedCourse,['created_at' =>Carbon::now()]);
 
     //act & assert
     loginAsUser($user);
@@ -65,7 +65,7 @@ it('shows latest purchased course first', function () {
 it('includes link to product videos', function () {
     //arrange
     $user = User::factory()
-    ->has(Course::factory())->create();
+    ->has(Course::factory(),'purchasedCourses')->create();
 
     //act & assert
     loginAsUser($user);

@@ -11,11 +11,11 @@ use function Pest\Laravel\get;
 it('has courses relation', function () {
     //arrange
     $user = User::factory()
-    ->has(Course::factory()->count(2))
+    ->has(Course::factory()->count(2),'purchasedCourses')
     ->create();
 
     //act & assert
-    expect($user->courses)
+    expect($user->purchasedCourses)
     ->toHaveCount(2)
     ->each->toBeInstanceOf(Course::class);
 });
@@ -23,11 +23,11 @@ it('has courses relation', function () {
 it('has videos relation', function () {
     //arrange
     $user = User::factory()
-    ->has(Video::factory()->count(2), 'videos')
+    ->has(Video::factory()->count(2), 'watchedVideos')
     ->create();
 
     //act & assert
-    expect($user->videos)
+    expect($user->watchedVideos)
     ->toHaveCount(2)
     ->each->toBeInstanceOf(Video::class);
 });

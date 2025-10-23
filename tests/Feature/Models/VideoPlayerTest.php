@@ -9,11 +9,16 @@ use Illuminate\Database\Eloquent\Factories\Sequence;
 use Livewire\Livewire;
 
 
+function createCourseAndVideos(int $videosCount = 1): Course
+{
+    $course = Course::factory()->has(Video::factory()->count($videosCount))->create();
+    // Video::factory()->count($videosCount)->create(['course_id' => $course->id]);
+    return $course;
+}
+
 it('shows details for given video', function () {
     //arrange
-    $course = Course::factory()
-    ->has(Video::factory())->create();
-
+    $course = createCourseAndVideos();
     //act & assert
     $video = $course->videos->first();
     Livewire::test(VideoPlayer::class, ['video' => $video])
@@ -27,8 +32,8 @@ it('shows details for given video', function () {
 
 it('shows given video', function () {
     //arrange
-    $course = Course::factory()
-    ->has(Video::factory())->create();
+    $course = createCourseAndVideos();
+
 
     //act & assert
     $video = $course->videos->first();
@@ -41,38 +46,37 @@ it('shows given video', function () {
 
 it('shows list of all course videos' , function () {
     //arrange
-    $course = Course::factory()
-    ->has(Video::factory()
-    ->count(3)
-    ->state(new Sequence(
-        ['title' => 'First video'],
-        ['title' => 'Second video'],
-        ['title' => 'Third video']
-    ))
-    )->create();
-
+    $course = createCourseAndVideos(videosCount: 3);
     //act & assert
     $video = $course->videos->first();
     Livewire::test(VideoPlayer::class, ['video' => $video])
     ->assertSeeText([
-        $course->videos->first()->title,
-        $course->videos->last()->title,
+       ...$course->videos->pluck('title')->toArray(),
     ])->assertSeeHtml([
-        route('pages.course-videos',Video::where('title','First video')->first())
+        route('pages.course-videos',[$course, $course->videos[1]])
     ]);
+});
+
+
+it('does not include route for current video' , function () {
+    //arrange
+    $course = createCourseAndVideos();
+    //act & assert
+    $video = $course->videos->first();
+    Livewire::test(VideoPlayer::class, ['video' => $video])->assertDontSeeHtml(
+        route('pages.course-videos',[$course, $course->videos->first()])
+    );
 });
 
 
 it('marks video as completed', function () {
     //arrange
     $user = User::factory()->create();
-    $course = Course::factory()
-    ->has(Video::factory()->state(['title' => 'Course video']))
-    ->create();
+    $course = createCourseAndVideos();
 
     //assert
-    $user->courses()->attach($course);
-    expect($user->videos)->toHaveCount(0);
+    $user->purchasedCourses()->attach($course);
+    expect($user->watchedVideos)->toHaveCount(0);
     //act & assert
     loginAsUser($user);
     $video = $course->videos->first();
@@ -81,22 +85,20 @@ it('marks video as completed', function () {
 
     //assert
     $user->refresh();
-    expect($user->videos)->toHaveCount(1)->first()->title->toEqual('Course video');
+    expect($user->watchedVideos)->toHaveCount(1)->first()->title->toEqual($video->title);
 
 });
 
 it('marks video as not completed', function () {
     //arrange
     $user = User::factory()->create();
-    $course = Course::factory()
-    ->has(Video::factory()->state(['title' => 'Course video']))
-    ->create();
+    $course = createCourseAndVideos();
 
-    $user->courses()->attach($course);
-    $user->videos()->attach($course->videos->first());
+    $user->purchasedCourses()->attach($course);
+    $user->watchedVideos()->attach($course->videos->first());
 
     //assert
-    expect($user->videos)->toHaveCount(1);
+    expect($user->watchedVideos)->toHaveCount(1);
     //act & assert
     loginAsUser($user);
     $video = $course->videos->first();
@@ -105,7 +107,7 @@ it('marks video as not completed', function () {
 
     //assert
     $user->refresh();
-    expect($user->videos)->toHaveCount(0);
+    expect($user->watchedVideos)->toHaveCount(0);
 
 });
 
