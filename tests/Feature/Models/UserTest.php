@@ -4,6 +4,7 @@ namespace Tests\Feature\Models;
 
 use App\Models\Course;
 use App\Models\User;
+use App\Models\Video;
 
 use function Pest\Laravel\get;
 
@@ -17,6 +18,18 @@ it('has courses relation', function () {
     expect($user->courses)
     ->toHaveCount(2)
     ->each->toBeInstanceOf(Course::class);
+});
+
+it('has videos relation', function () {
+    //arrange
+    $user = User::factory()
+    ->has(Video::factory()->count(2), 'videos')
+    ->create();
+
+    //act & assert
+    expect($user->videos)
+    ->toHaveCount(2)
+    ->each->toBeInstanceOf(Video::class);
 });
 
 

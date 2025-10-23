@@ -1,1 +1,1 @@
-<livewire:video-player />
+<livewire:video-player :video="$video" />

@@ -39,7 +39,7 @@ it('gives successful response for videos page', function () {
     ->create();
     // act & assert
     loginAsUser();
-    get(route('pages.course-videos', $course))
+    get(route('pages.course-videos', [$course,$course->videos->first()]))
     ->assertOk();
 });
 
