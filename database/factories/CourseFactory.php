@@ -34,6 +34,7 @@ class CourseFactory extends Factory
             'description' => $this->faker->text(100),
             'image_name' => 'image.png',
             'learnings' => ['Learn A ', 'Learn B', 'Learn C'],
+            'paddle_product_id' => $this->faker->uuid(),
         ];
     }
 
