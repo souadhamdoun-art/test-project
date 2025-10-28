@@ -82,3 +82,49 @@ it('includes logout', function () {
     ->assertSeeText('Log Out')
     ->assertSee(route('logout'));
 });
+
+it('includes link to course details', function () {
+    //arrange
+     $firstCourse = Course::factory()->released()->create();
+     $secondCourse = Course::factory()->released()->create();
+     $lastCourse = Course::factory()->released()->create();
+
+    //act & assert
+   get(route('pages.home'))
+   ->assertOk()
+   ->assertSee([
+      route('pages.course-details',$firstCourse),
+      route('pages.course-details',$secondCourse),
+      route('pages.course-details',$lastCourse),
+   ]);
+});
+
+it('includes title',function(){
+    //arrange
+
+    $expectedTitle = config('app.name'). ' - Home';
+
+    //act & assert
+    get(route('pages.home'))
+    ->assertOk()
+    ->assertSee("<title>$expectedTitle</title>",false);
+
+});
+
+
+it('includes social tags', function () {
+
+    //act & assert
+    get(route('pages.home'))
+    ->assertOk()
+    ->assertSee([
+        '<meta name="description" content="LaravelCasts is the learning platform for Laravel developers">',
+        '<meta property="og:type" content="website">',
+        '<meta property="og:url" content="'.route('pages.home').'">',
+        '<meta property="og:title" content="LaravelCasts">',
+        '<meta property="og:description" content="LaravelCasts is the learning platform for Laravel developers">',
+        '<meta property="og:image" content="'.asset('images/social.png').'">',
+        '<meta property="twitter:card" content="summary_large_image">',
+    ],false);
+
+});
