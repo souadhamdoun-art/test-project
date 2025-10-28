@@ -19,6 +19,7 @@
     <img src="{{ asset("images/{$course->image_name}") }}" alt="{{ $course->title }}">
     <script src="https://cdn.paddle.com/paddle/paddle.js"></script>
     <script type="text/javascript">
+        Paddle.Environment.set('sandbox');
         Paddle.Setup({ vendor: {{ config('services.paddle.vendor_id') }} });
     </script>
     <a href="#" class="paddle-buy" data-product="{{ $course->paddle_product_id }}">Buy Now</a>

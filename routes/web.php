@@ -5,11 +5,14 @@ use App\Http\Controllers\PageCourseVideosController;
 use App\Http\Controllers\PageDashboardController;
 use App\Http\Controllers\PageHomeController;
 use Illuminate\Support\Facades\Route;
+use Spatie\WebhookClient\Http\Controllers\WebhookController;
 
 Route::get('/', PageHomeController::class)->name('pages.home');
 
 Route::get('/course-details/{course:slug}', PageCourseDetailsController::class)
 ->name('pages.course-details');
+
+Route::post('webhooks', WebhookController::class);
 
 
 
