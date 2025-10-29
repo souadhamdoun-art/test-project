@@ -5,6 +5,7 @@ namespace Tests\Feature\Models;
 use App\Models\Course;
 use App\Models\User;
 use App\Models\Video;
+use Modules\Reviews\Models\Review;
 
 use function Pest\Laravel\get;
 
@@ -52,4 +53,37 @@ it('includes logout if logged in', function () {
     ->assertSee(route('logout'));
 
 });
+
+it('has many reviews', function () {
+    //arrange
+    $user = User::factory()
+    ->has(Review::factory()->count(2), 'reviews')
+    ->create();
+
+    //act & assert
+    expect($user->reviews)
+    ->toHaveCount(2)
+    ->each->toBeInstanceOf(Review::class);
+});
+
+it('hasReviewedCourse returns true when user has reviewed course', function () {
+    //arrange
+    $user = User::factory()
+    ->has(Review::factory()->count(2), 'reviews')
+    ->create();
+
+    //act & assert
+    expect($user->hasReviewedCourse($user->reviews->first()->course_id))->toBeTrue();
+});
+
+it('hasReviewedCourse returns false when user has not reviewed course', function () {
+    //arrange
+    $user = User::factory()->create();
+    $course = Course::factory()->create();
+
+    //act & assert
+    expect($user->hasReviewedCourse($course->id))->toBeFalse();
+});
+
+
 

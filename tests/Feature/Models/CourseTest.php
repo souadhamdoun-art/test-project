@@ -4,6 +4,7 @@ namespace Tests\Feature\Models;
 use App\Models\Course;
 use App\Models\Video;
 use Carbon\Carbon;
+use Modules\Reviews\Models\Review;
 
 use function Pest\Laravel\get;
 
@@ -75,4 +76,70 @@ it('has videos relation', function () {
         ->each->toBeInstanceOf(Video::class);
 });
 
+it('has many reviews', function () {
+    //arrange
+    $course = Course::factory()
+        ->released()
+        ->has(Review::factory()->count(3), 'reviews')
+        ->create();
+
+    //act & assert
+    expect($course->reviews)
+        ->toHaveCount(3)
+        ->each->toBeInstanceOf(Review::class);
+});
+
+it('calculates average rating correctly', function () {
+    //arrange
+    $course = Course::factory()
+        ->released()
+        ->has(Review::factory()->state(['rating' => 5]), 'reviews')
+        ->has(Review::factory()->state(['rating' => 3]), 'reviews')
+        ->has(Review::factory()->state(['rating' => 4]), 'reviews')
+        ->create();
+
+    //act & assert
+    // Average of 5, 3, 4 = 4.0
+    expect($course->averageRating)->toBe(4.0);
+});
+
+it('averageRating only includes approved reviews', function () {
+    //arrange
+    $course = Course::factory()
+        ->released()
+        ->has(Review::factory()->state(['rating' => 5, 'status' => 'approved']), 'reviews')
+        ->has(Review::factory()->state(['rating' => 3, 'status' => 'pending']), 'reviews')
+        ->has(Review::factory()->state(['rating' => 4, 'status' => 'rejected']), 'reviews')
+        ->has(Review::factory()->state(['rating' => 4, 'status' => 'approved']), 'reviews')
+
+        ->create();
+
+    //act & assert
+    expect($course->averageRating)->toBe(4.5);
+});
+
+it('averageRating returns 0 when no reviews', function () {
+    //arrange
+    $course = Course::factory()->released()->create();
+
+    //act & assert
+    expect($course->averageRating)->toBe(0.0);
+});
+
+it('approvedReviews relation returns only approved reviews', function () {
+    //arrange
+    $course = Course::factory()
+        ->released()
+        ->has(Review::factory()->state(['rating' => 5, 'status' => 'approved']), 'reviews')
+        ->has(Review::factory()->state(['rating' => 3, 'status' => 'pending']), 'reviews')
+        ->has(Review::factory()->state(['rating' => 4, 'status' => 'rejected']), 'reviews')
+        ->has(Review::factory()->state(['rating' => 4, 'status' => 'approved']), 'reviews')
+
+        ->create();
+
+    //act & assert
+    expect($course->approvedReviews)
+        ->toHaveCount(2)
+        ->each->toBeInstanceOf(Review::class);
+});
 

@@ -5,11 +5,13 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Modules\Reviews\Models\Review;
 
 class User extends Authenticatable
 {
@@ -78,5 +80,14 @@ class User extends Authenticatable
         return $this->belongsToMany(Video::class,'watched_videos')
         ->withTimestamps();
 
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+    public function hasReviewedCourse($courseId)
+    {
+        return $this->reviews()->where('course_id', $courseId)->exists();
     }
 }
