@@ -37,3 +37,38 @@ it('can create rejected review', function () {
     $review = Review::factory()->rejected()->create();
     expect($review->status)->toBe('rejected');
 });
+
+it('isApproved returns true only when status is approved', function () {
+    $review = Review::factory()->approved()->create();
+    expect($review->isApproved())->toBeTrue();
+});
+
+it('reject method changes status to rejected', function () {
+    $review = Review::factory()->create();
+    $review->reject();
+    expect($review->status)->toBe('rejected');
+});
+
+
+it('scopeApproved filters only approved reviews', function () {
+    $approvedReview = Review::factory()->approved()->create();
+    $pendingReview = Review::factory()->pending()->create();
+    $rejectedReview = Review::factory()->rejected()->create();
+    expect(Review::approved()->count())->toBe(1);
+});
+
+it('scopeRecent orders by created_at desc', function () {
+    $review1 = Review::factory()->create([
+        'created_at' => now()->subDays(1),
+    ]);
+    $review2 = Review::factory()->create([
+        'created_at' => now()->subDays(2),
+    ]);
+    $review3 = Review::factory()->create([
+        'created_at' => now()->subDays(3),
+    ]);
+    $reviews = Review::recent()->get();
+    expect($reviews)->toHaveCount(3);
+    expect($reviews->first()->id)->toBe($review1->id);
+    expect($reviews->last()->id)->toBe($review3->id);
+});

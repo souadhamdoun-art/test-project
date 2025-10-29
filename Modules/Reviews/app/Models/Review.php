@@ -38,5 +38,24 @@ class Review extends Model
     {
         return $this->belongsTo(Course::class);
     }
+    public function isApproved(): bool
+    {
+        return $this->status === 'approved';
+    }
+
+    public function reject()
+    {
+        $this->status = 'rejected';
+        $this->save();
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
+    public function scopeRecent($query)
+    {
+        return $query->orderBy('created_at', 'desc');
+    }
 }
 
