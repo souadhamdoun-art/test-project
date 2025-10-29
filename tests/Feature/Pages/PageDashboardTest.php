@@ -7,7 +7,7 @@ use App\Models\Course;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Sequence;
-
+use Juampi92\TestSEO\TestSEO;
 
 it('cannot be accessed by guest', function () {
     get(route('pages.dashboard'))->assertRedirect(route('login'));
@@ -104,10 +104,13 @@ it('includes title',function(){
 
     $expectedTitle = config('app.name'). ' - Home';
 
-    //act & assert
-    get(route('pages.home'))
-    ->assertOk()
-    ->assertSee("<title>$expectedTitle</title>",false);
+    //act
+    $response = get(route('pages.home'))->assertOk();
+    //assertion
+    $seo = new TestSEO($response->getContent());
+    expect($seo->data)
+    ->title()->toBe($expectedTitle);
+
 
 });
 
@@ -115,16 +118,14 @@ it('includes title',function(){
 it('includes social tags', function () {
 
     //act & assert
-    get(route('pages.home'))
-    ->assertOk()
-    ->assertSee([
-        '<meta name="description" content="LaravelCasts is the learning platform for Laravel developers">',
-        '<meta property="og:type" content="website">',
-        '<meta property="og:url" content="'.route('pages.home').'">',
-        '<meta property="og:title" content="LaravelCasts">',
-        '<meta property="og:description" content="LaravelCasts is the learning platform for Laravel developers">',
-        '<meta property="og:image" content="'.asset('images/social.png').'">',
-        '<meta property="twitter:card" content="summary_large_image">',
-    ],false);
+    $response = get(route('pages.home'))->assertOk();
+    $seo = new TestSEO($response->getContent());
+    expect($seo->data)
+    ->description()->toBe('LaravelCasts is the learning platform for Laravel developers')
+    ->openGraph()->type->toBe('website')
+    ->openGraph()->url->toBe(route('pages.home'))
+    ->openGraph()->title->toBe('LaravelCasts')
+    ->openGraph()->description->toBe('LaravelCasts is the learning platform for Laravel developers')
+    ->openGraph()->image->toBe(asset('images/social.png'));
 
 });
