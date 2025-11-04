@@ -93,9 +93,9 @@ it('calculates average rating correctly', function () {
     //arrange
     $course = Course::factory()
         ->released()
-        ->has(Review::factory()->state(['rating' => 5]), 'reviews')
-        ->has(Review::factory()->state(['rating' => 3]), 'reviews')
-        ->has(Review::factory()->state(['rating' => 4]), 'reviews')
+        ->has(Review::factory()->state(['rating' => 5, 'status' => 'approved']), 'reviews')
+        ->has(Review::factory()->state(['rating' => 3, 'status' => 'approved']), 'reviews')
+        ->has(Review::factory()->state(['rating' => 4, 'status' => 'approved']), 'reviews')
         ->create();
 
     //act & assert
