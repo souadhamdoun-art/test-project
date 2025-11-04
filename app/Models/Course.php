@@ -36,7 +36,7 @@ class Course extends Model
 
     public function getAverageRatingAttribute(): float
     {
-        return $this->reviews()->avg('rating') ?? 0.0;
+        return $this->reviews()->where('status', 'approved')->avg('rating') ?? 0.0;
     }
 
     public function getApprovedReviewsAttribute(): Collection
