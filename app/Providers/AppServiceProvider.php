@@ -19,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Enregistrer les routes du module Reviews
+        $this->loadRoutesFrom(base_path('Modules/Reviews/routes/web.php'));
     }
 }
