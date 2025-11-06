@@ -32,6 +32,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'is_premium',
     ];
 
     /**
@@ -89,5 +91,10 @@ class User extends Authenticatable
     public function hasReviewedCourse($courseId)
     {
         return $this->reviews()->where('course_id', $courseId)->exists();
+    }
+
+    public function canCreateCourse(): bool
+    {
+        return $this->role === 'instructor' || $this->role === 'admin';
     }
 }
