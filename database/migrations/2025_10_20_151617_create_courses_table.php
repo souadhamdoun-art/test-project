@@ -21,6 +21,10 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->timestamp('released_at')->nullable();
+            $table->decimal('price', 10, 2)->nullable();
+            $table->string('difficulty')->nullable();
+            $table->boolean('is_published')->default(false);
+            $table->decimal('discount_percentage', 5, 2)->default(0);
             $table->timestamps();
         });
     }

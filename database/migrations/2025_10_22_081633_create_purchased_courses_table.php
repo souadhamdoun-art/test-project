@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class);
             $table->foreignIdFor(Course::class);
+            $table->enum('status', ['pending', 'completed', 'cancelled', 'refunded'])->default('pending');
             $table->timestamps();
         });
     }
